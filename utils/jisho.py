@@ -63,7 +63,7 @@ class JishoResponse():
 
     def query(self):
         url = TEMPLATE_URL.format(urllib.parse.quote_plus(self.query_string))
-        r = requests.get(url)
+        r = requests.get(url, headers=HEADER)
 
         if r.status_code != 200:
             print(f"ERROR: Failed to access Jisho API... {r.status_code}")
