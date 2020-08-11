@@ -28,5 +28,8 @@ Clone this repo, create a `config.json` in the root directory with the following
 
     {
         "key": Your discord bot token,
-        "prefix": Your prefix
+        "prefix": Your prefix,
     }
+
+
+If there a re questions or requests you can find me on discord: `Lauchmelder#1234`

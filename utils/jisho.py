@@ -3,6 +3,10 @@ import urllib.parse
 import json
 
 TEMPLATE_URL = "https://jisho.org/api/v1/search/words?keyword={0}"
+HEADER = {
+    "User-Agent": "Jisho Bot",
+    "From": "https://github.com/Lauchmelder23/JishoBot"
+}
 
 class JishoSenses():
     def __init__(self, sense):
