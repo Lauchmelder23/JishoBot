@@ -32,13 +32,14 @@ class Kanji(commands.Cog):
         embed = discord.Embed(
             title = node.kanji,
             url = node.url,
+            description = node.meaning,
             colour = 0x56d926
         )
 
         if node.kun:
-            embed.add_field(name="Kun", value=", ".join(node.kun))
+            embed.add_field(name="Kun", value=", ".join(node.kun), inline=False)
         if node.on:
-            embed.add_field(name="On", value=", ".join(node.on))
+            embed.add_field(name="On", value=", ".join(node.on), inline=False)
 
         embed.set_footer(text=f"{self.activeObject.page + 1}/{self.activeObject.total_pages}")
 

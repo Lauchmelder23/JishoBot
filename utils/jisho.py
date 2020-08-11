@@ -87,6 +87,7 @@ class JishoKanjiNode():
         # Information about the Kanji
         self.kanji = ""
         self.url = "https://jisho.org/search/"
+        self.meaning = ""
         self.kun = []
         self.on = []
 
@@ -119,8 +120,11 @@ class JishoKanji():
             self.nodes[-1].kanji = info.findChild("h1").string
             self.nodes[-1].url += urllib.parse.quote_plus(self.nodes[-1].kanji + "#kanji")
 
+            # Meanings
+            self.nodes[-1].meaning = info.findChild("div", {"class": "kanji-details__main-meanings"}, recursive=True).string
+
             readings_block = info.findChild("div", {"class": "kanji-details__main-readings"}, recursive=True)
-            
+
             # Kun Yomi
             kun_block = readings_block.findChild("dl", {"class": "dictionary_entry kun_yomi"}, recursive=True)
             if kun_block != None:
