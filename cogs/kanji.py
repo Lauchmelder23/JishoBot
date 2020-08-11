@@ -27,24 +27,31 @@ class Kanji(commands.Cog):
         self.latestMessage = 0
 
     async def createEmbed(self):
-        response = self.activeObject.response
-        node = response.nodes[self.activeObject.page]
+        if self.activeObject.total_pages == 0:
+            embed = discord.Embed(
+                title = "No search results",
+                description = "The search returned nothing. Did you make a typo?",
+                colour = 0x56d926
+            )
+        else:
+            response = self.activeObject.response
+            node = response.nodes[self.activeObject.page]
 
-        embed = discord.Embed(
-            title = node.kanji,
-            url = node.url,
-            description = node.meaning,
-            colour = 0x56d926
-        )
+            embed = discord.Embed(
+                title = node.kanji,
+                url = node.url,
+                description = node.meaning,
+                colour = 0x56d926
+            )
 
-        if node.kun:
-            embed.add_field(name="Kun", value="、 ".join(node.kun), inline=False)
-        if node.on:
-            embed.add_field(name="On", value="、 ".join(node.on), inline=False)
+            if node.kun:
+                embed.add_field(name="Kun", value="、 ".join(node.kun), inline=False)
+            if node.on:
+                embed.add_field(name="On", value="、 ".join(node.on), inline=False)
 
-        embed.add_field(name=f"Radical: {node.radical[0]}", value=node.radical[1], inline=False)
+            embed.add_field(name=f"Radical: {node.radical[0]}", value=node.radical[1], inline=False)
 
-        embed.set_footer(text=f"Jōyō kanji (Grade {node.grade}) | JLPT level {node.jlpt}\t\t{self.activeObject.page + 1}/{self.activeObject.total_pages}")
+            embed.set_footer(text=f"Jōyō kanji (Grade {node.grade}) | JLPT level {node.jlpt}\t\t{self.activeObject.page + 1}/{self.activeObject.total_pages}")
 
         return embed
 
