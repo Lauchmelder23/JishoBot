@@ -1,6 +1,7 @@
 import requests
 import urllib.parse
 import json
+import re
 from bs4 import BeautifulSoup
 
 TEMPLATE_URL = "https://jisho.org/api/v1/search/words?keyword={0}"
@@ -90,7 +91,7 @@ class JishoKanjiNode():
         self.meaning = ""
         self.kun = []
         self.on = []
-        self.radical = ""
+        self.radical = []
         self.grade = ""
         self.jlpt = ""
 
@@ -144,6 +145,14 @@ class JishoKanji():
                     self.nodes[-1].on.append(reading.string)
 
             # Radical
-            radical_block = readings_block.findChild("div", {"class": "radicals"}, recursive=True)
-            print(radical_block)
+            radical_block = info.findChild("div", {"class": "radicals"}, recursive=True).findChild("span")
+            self.nodes[-1].radical.append(re.sub(r'[ \n"]', "", radical_block.contents[2].string))
+            self.nodes[-1].radical.append(re.sub(r'[ \n"]', "", radical_block.contents[1].string))
+
+            # JLPT/Grade info
+            grade_block = info.findChild("div", {"class": "grade"}, recursive=True)
+            if grade_block != None:
+                self.nodes[-1].grade = grade_block.findChild("strong").string[-1]
+            
+            self.nodes[-1].jlpt = info.findChild("div", {"class": "jlpt"}, recursive=True).findChild("strong").string
 

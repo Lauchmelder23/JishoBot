@@ -38,11 +38,13 @@ class Kanji(commands.Cog):
         )
 
         if node.kun:
-            embed.add_field(name="Kun", value=", ".join(node.kun), inline=False)
+            embed.add_field(name="Kun", value="、 ".join(node.kun), inline=False)
         if node.on:
-            embed.add_field(name="On", value=", ".join(node.on), inline=False)
+            embed.add_field(name="On", value="、 ".join(node.on), inline=False)
 
-        embed.set_footer(text=f"{self.activeObject.page + 1}/{self.activeObject.total_pages}")
+        embed.add_field(name=f"Radical: {node.radical[0]}", value=node.radical[1], inline=False)
+
+        embed.set_footer(text=f"Jōyō kanji (Grade {node.grade}) | JLPT level {node.jlpt}\t\t{self.activeObject.page + 1}/{self.activeObject.total_pages}")
 
         return embed
 
