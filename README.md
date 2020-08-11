@@ -11,6 +11,13 @@ It includes information about
 
 ![An example embed](https://i.imgur.com/apxYK10.png)
 
+It now also delivers information about Kanji, including
+* Kun/On Readings
+* Stroke count
+* Radicals
+
+![An example embed](https://i.imgur.com/16REFh2.png)
+
 The embed is interactive and can be controlled via Reactions. This will then show the next/previous entry. Right now, only the latest embed will be interactive, so if you use the bot again the previous responses will become inactive.
 
 ## How do I get it?
