@@ -22,6 +22,7 @@ class Search(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.activeObject = None
+        self.latestMessage = 0
 
     async def createEmbed(self):
         response = self.activeObject.response
@@ -56,12 +57,24 @@ class Search(commands.Cog):
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
+        message = reaction.message
+        if message.id != self.latestMessage:
+            return
+
         if user == self.bot.user:
             return
 
         if reaction.me:
             if reaction.emoji == "⬅️":
-                pass
+                self.activeObject.prev()
+
+            if reaction.emoji == "➡️":
+                self.activeObject.next()
+
+        embed = await self.createEmbed()
+        await message.edit(embed=embed)
+
+        await reaction.remove(user)
 
 
     @commands.command(name="search", description="Searches Jisho", usage="<query>", aliases=["s"])
@@ -73,6 +86,7 @@ class Search(commands.Cog):
         self.activeObject = JishoObject(query)
         embed = await self.createEmbed()
         message = await ctx.send(embed=embed)
+        self.latestMessage = message.id
         await message.add_reaction("⬅️")
         await message.add_reaction("➡️")
 
