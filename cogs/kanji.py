@@ -3,10 +3,11 @@ from discord.ext import commands
 from utils import jisho
 
 class JishoKanjiObject():
-    def __init__(self, query):
+    def __init__(self, query, owner):
         self.response = jisho.JishoKanji(query)
         self.total_pages = self.response.entries
         self.page = 0
+        self.owner = owner
 
     def prev(self):
         self.page -= 1
@@ -54,6 +55,9 @@ class Kanji(commands.Cog):
         if user == self.bot.user:
             return
 
+        if user.id != self.activeObject.owner:
+            return
+
         if reaction.me:
             if reaction.emoji == "⬅️":
                 self.activeObject.prev()
@@ -72,7 +76,7 @@ class Kanji(commands.Cog):
         if kanji is None:
             return 
 
-        self.activeObject = JishoKanjiObject(kanji)
+        self.activeObject = JishoKanjiObject(kanji, ctx.author.id)
         embed = await self.createEmbed()
         message = await ctx.send(embed=embed)
         self.latestMessage = message.id

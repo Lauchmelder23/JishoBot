@@ -90,6 +90,10 @@ class JishoKanjiNode():
         self.meaning = ""
         self.kun = []
         self.on = []
+        self.radical = ""
+        self.grade = ""
+        self.jlpt = ""
+
 
 class JishoKanji():
     def __init__(self, query):     
@@ -138,3 +142,8 @@ class JishoKanji():
                 readings = on_block.findChildren("a", recursive=True)
                 for reading in readings:
                     self.nodes[-1].on.append(reading.string)
+
+            # Radical
+            radical_block = readings_block.findChild("div", {"class": "radicals"}, recursive=True)
+            print(radical_block)
+

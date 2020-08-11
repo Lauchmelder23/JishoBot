@@ -3,10 +3,11 @@ from discord.ext import commands
 from utils import jisho
 
 class JishoObject():
-    def __init__(self, query):
+    def __init__(self, query, owner):
         self.response = jisho.JishoResponse(query)
         self.total_pages = self.response.entries
         self.page = 0
+        self.owner = owner
 
     def prev(self):
         self.page -= 1
@@ -64,6 +65,9 @@ class Search(commands.Cog):
         if user == self.bot.user:
             return
 
+        if user.id != self.activeObject.owner:
+            return
+
         if reaction.me:
             if reaction.emoji == "⬅️":
                 self.activeObject.prev()
@@ -83,7 +87,7 @@ class Search(commands.Cog):
         if query == None:
             return
         
-        self.activeObject = JishoObject(query)
+        self.activeObject = JishoObject(query, ctx.author.id)
         embed = await self.createEmbed()
         message = await ctx.send(embed=embed)
         self.latestMessage = message.id
