@@ -1,14 +1,16 @@
 import requests
 import urllib.parse
 import json
+from bs4 import BeautifulSoup
 
 TEMPLATE_URL = "https://jisho.org/api/v1/search/words?keyword={0}"
+TEMPLATE_KANJI_URL = "https://jisho.org/search/{0}"
 HEADER = {
     "User-Agent": "Jisho Bot",
     "From": "https://github.com/Lauchmelder23/JishoBot"
 }
 
-class JishoSenses():
+class JishoSense():
     def __init__(self, sense):
         self.english_definitions = sense["english_definitions"]
         self.fenglish_definitions = "; ".join(self.english_definitions)
@@ -52,7 +54,7 @@ class JishoNode():
         self.senses = []
 
         for sense in node["senses"]:
-            self.senses.append(JishoSenses(sense))
+            self.senses.append(JishoSense(sense))
 
 class JishoResponse():
     def __init__(self, query: str):
@@ -78,3 +80,36 @@ class JishoResponse():
         for node in self.raw["data"]:
             self.nodes.append(JishoNode(node))
             
+
+
+class JishoKanjiNode():
+    def __init__(self):
+        # Information about the Kanji
+        self.kanji = ""
+        self.on = []
+        self.kun = []
+
+class JishoKanji():
+    def __init__(self, query):     
+        self.query_string = query
+
+        # List of JishoKanjiNodes
+        self.nodes = []
+        self.entries = 0
+
+        self.query()
+
+    def query(self):
+        url = TEMPLATE_KANJI_URL.format(urllib.parse.quote_plus(self.query_string + "#kanji"))
+        r = requests.get(url, headers=HEADER)
+
+        if r.status_code != 200:
+            print(f"ERROR: Failed to access Jisho API... {r.status_code}")
+            return None
+
+        body = BeautifulSoup(r.text, features="html.parser")
+
+        info_blocks = body.find_all("div", {"class": "kanji details"})
+
+        for info in info_blocks:
+            block = BeautifulSoup(str(info), features="html.parser")
