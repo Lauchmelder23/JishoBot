@@ -67,14 +67,14 @@ class Search(commands.Cog):
         if reaction.me:
             if reaction.emoji == "⬅️":
                 self.activeObject.prev()
+                await reaction.remove(user)
 
             if reaction.emoji == "➡️":
                 self.activeObject.next()
+                await reaction.remove(user)
 
         embed = await self.createEmbed()
         await message.edit(embed=embed)
-
-        await reaction.remove(user)
 
 
     @commands.command(name="search", description="Searches Jisho", usage="<query>", aliases=["s"])
@@ -87,8 +87,10 @@ class Search(commands.Cog):
         embed = await self.createEmbed()
         message = await ctx.send(embed=embed)
         self.latestMessage = message.id
-        await message.add_reaction("⬅️")
-        await message.add_reaction("➡️")
+
+        if self.activeObject.total_pages > 1:
+            await message.add_reaction("⬅️")
+            await message.add_reaction("➡️")
 
     @search.error
     async def search_error(self, ctx, error):

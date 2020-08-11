@@ -86,8 +86,9 @@ class JishoKanjiNode():
     def __init__(self):
         # Information about the Kanji
         self.kanji = ""
-        self.on = []
+        self.url = "https://jisho.org/search/"
         self.kun = []
+        self.on = []
 
 class JishoKanji():
     def __init__(self, query):     
@@ -100,8 +101,8 @@ class JishoKanji():
         self.query()
 
     def query(self):
-        url = TEMPLATE_KANJI_URL.format(urllib.parse.quote_plus(self.query_string + "#kanji"))
-        r = requests.get(url, headers=HEADER)
+        self.url = TEMPLATE_KANJI_URL.format(urllib.parse.quote_plus(self.query_string + "#kanji"))
+        r = requests.get(self.url, headers=HEADER)
 
         if r.status_code != 200:
             print(f"ERROR: Failed to access Jisho API... {r.status_code}")
@@ -112,4 +113,24 @@ class JishoKanji():
         info_blocks = body.find_all("div", {"class": "kanji details"})
 
         for info in info_blocks:
-            block = BeautifulSoup(str(info), features="html.parser")
+            self.entries += 1
+            self.nodes.append(JishoKanjiNode())
+
+            self.nodes[-1].kanji = info.findChild("h1").string
+            self.nodes[-1].url += urllib.parse.quote_plus(self.nodes[-1].kanji + "#kanji")
+
+            readings_block = info.findChild("div", {"class": "kanji-details__main-readings"}, recursive=True)
+            
+            # Kun Yomi
+            kun_block = readings_block.findChild("dl", {"class": "dictionary_entry kun_yomi"}, recursive=True)
+            if kun_block != None:
+                readings = kun_block.findChildren("a", recursive=True)
+                for reading in readings:
+                    self.nodes[-1].kun.append(reading.string)
+
+            # On Yomi
+            on_block = readings_block.findChild("dl", {"class": "dictionary_entry on_yomi"}, recursive=True)
+            if on_block != None:
+                readings = on_block.findChildren("a", recursive=True)
+                for reading in readings:
+                    self.nodes[-1].on.append(reading.string)
