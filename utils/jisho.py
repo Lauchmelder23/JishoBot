@@ -94,6 +94,7 @@ class JishoKanjiNode():
         self.radical = []
         self.grade = ""
         self.jlpt = ""
+        self.strokes = ""
 
 
 class JishoKanji():
@@ -156,3 +157,5 @@ class JishoKanji():
             
             self.nodes[-1].jlpt = info.findChild("div", {"class": "jlpt"}, recursive=True).findChild("strong").string
 
+            # Strokes
+            self.nodes[-1].strokes = info.findChild("div", {"class": "kanji-details__stroke_count"}, recursive=True).findChild("strong").string
