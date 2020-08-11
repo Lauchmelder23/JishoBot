@@ -18,9 +18,11 @@ Either [invite](https://discord.com/api/oauth2/authorize?client_id=7426581270607
 
 ## Usage
 To perform a normal dictionary search, use
+
     -[search|s] <query>
 
 To perform a kanji search, use
+
     -[kanji|k] <kanji(s)>
 
 The prefix can be changed in the config file.
