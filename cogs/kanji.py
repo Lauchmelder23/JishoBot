@@ -38,9 +38,9 @@ class Kanji(commands.Cog):
             node = response.nodes[self.activeObject.page]
 
             embed = discord.Embed(
-                title = node.kanji,
+                title = node.meaning,
                 url = node.url,
-                description = node.meaning,
+                description = f"{node.strokes} strokes",
                 colour = 0x56d926
             )
 
@@ -50,7 +50,8 @@ class Kanji(commands.Cog):
                 embed.add_field(name="On", value="、 ".join(node.on), inline=False)
 
             embed.add_field(name=f"Radical: {node.radical[0]}", value=node.radical[1], inline=False)
-            embed.add_field(name=f"{node.strokes} strokes", value="\u200b", inline=False)
+            
+            embed.set_thumbnail(url=node.image_url)
 
             embed.set_footer(text=f"Jōyō kanji (Grade {node.grade}) | JLPT level {node.jlpt}\t\t{self.activeObject.page + 1}/{self.activeObject.total_pages}")
 
@@ -86,11 +87,19 @@ class Kanji(commands.Cog):
         if kanji is None:
             return 
 
+        embed = discord.Embed(
+            title = "Loading...",
+            description = "This might take a few seconds",
+            colour = 0x56d926
+        )
+
+        message = await ctx.send(embed=embed)
+
         kanji = kanji[:5]
 
         self.activeObject = JishoKanjiObject(kanji, ctx.author.id)
         embed = await self.createEmbed()
-        message = await ctx.send(embed=embed)
+        await message.edit(embed=embed)
         self.latestMessage = message.id
 
         if self.activeObject.total_pages > 1:

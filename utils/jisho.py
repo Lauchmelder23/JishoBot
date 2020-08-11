@@ -95,6 +95,7 @@ class JishoKanjiNode():
         self.grade = ""
         self.jlpt = ""
         self.strokes = ""
+        self.image_url = ""
 
 
 class JishoKanji():
@@ -159,3 +160,16 @@ class JishoKanji():
 
             # Strokes
             self.nodes[-1].strokes = info.findChild("div", {"class": "kanji-details__stroke_count"}, recursive=True).findChild("strong").string
+
+            # Stroke order diagram
+            r = requests.get(url=("https://jitenon.com/kanji/" + urllib.parse.quote_plus(self.nodes[-1].kanji)), headers=HEADER)
+            if r.status_code != 200:
+                continue
+
+            strokediag = BeautifulSoup(r.text, features="html.parser")
+            image_url = strokediag.find("div", {"class": "kanji_main ChangeElem_Panel"}).findChild("img")["src"]
+            image_url = "https:" + image_url
+            image_url = image_url.replace("shotai3", "shotai2")
+            self.nodes[-1].image_url = image_url
+
+
