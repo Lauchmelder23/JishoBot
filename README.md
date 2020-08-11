@@ -17,9 +17,11 @@ The embed is interactive and can be controlled via Reactions. This will then sho
 Either [invite](https://discord.com/api/oauth2/authorize?client_id=742658127060795393&permissions=59456&scope=bot) a bot I am hosting or [set it up](#setup) yourself. Note that if you invite the bot you won't be able to change its prefix!
 
 ## Usage
-There is only one command, and that is
-
+To perform a normal dictionary search, use
     -[search|s] <query>
+
+To perform a kanji search, use
+    -[kanji|k] <kanji(s)>
 
 The prefix can be changed in the config file.
 
