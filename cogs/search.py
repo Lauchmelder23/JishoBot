@@ -25,33 +25,40 @@ class Search(commands.Cog):
         self.latestMessage = 0
 
     async def createEmbed(self):
-        response = self.activeObject.response
-        node = response.nodes[self.activeObject.page]
-        embed = discord.Embed(
-            title = node.japanese[0][0],
-            url = f"https://jisho.org/word/{node.slug}",
-            description = node.japanese[0][1],
-            colour = 0x56d926
-        )
+        if self.activeObject.total_pages == 0:
+            embed = discord.Embed(
+                title = "No search results",
+                description = "The search returned nothing. Did you make a typo?",
+                colour = 0x56d926
+            )
+        else:
+            response = self.activeObject.response
+            node = response.nodes[self.activeObject.page]
+            embed = discord.Embed(
+                title = node.japanese[0][0],
+                url = f"https://jisho.org/word/{node.slug}",
+                description = node.japanese[0][1],
+                colour = 0x56d926
+            )
 
-        i = 1
-        for sense in node.senses:
-            embed.add_field(name=f"{i}. {sense.fenglish_definitions}", value=sense.fparts_of_speech, inline=False)
-            i += 1
+            i = 1
+            for sense in node.senses:
+                embed.add_field(name=f"{i}. {sense.fenglish_definitions}", value=sense.fparts_of_speech, inline=False)
+                i += 1
 
-        if len(node.japanese) > 1:
-            other = ""
-            for word, reading in node.japanese[1:]:
-                other += word
-                if reading != "":
-                    other += f"【{reading}】"
-                other += "\n"
-            embed.add_field(name="Other forms", value=other)
+            if len(node.japanese) > 1:
+                other = ""
+                for word, reading in node.japanese[1:]:
+                    other += word
+                    if reading != "":
+                        other += f"【{reading}】"
+                    other += "\n"
+                embed.add_field(name="Other forms", value=other)
 
 
-        embed.set_footer(
-            text = f"{node.ftags} \t\t {self.activeObject.page + 1}/{self.activeObject.total_pages}"
-        )
+            embed.set_footer(
+                text = f"{node.ftags} \t\t {self.activeObject.page + 1}/{self.activeObject.total_pages}"
+            )
 
         return embed
 
@@ -87,8 +94,9 @@ class Search(commands.Cog):
         embed = await self.createEmbed()
         message = await ctx.send(embed=embed)
         self.latestMessage = message.id
-        await message.add_reaction("⬅️")
-        await message.add_reaction("➡️")
+        if self.activeObject.total_pages > 0:
+            await message.add_reaction("⬅️")
+            await message.add_reaction("➡️")
 
     @search.error
     async def search_error(self, ctx, error):
