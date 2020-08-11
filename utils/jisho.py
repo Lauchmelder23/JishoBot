@@ -16,25 +16,35 @@ class JishoNode():
         self.is_common = node["is_common"]
         self.tags = node["tags"]
         self.jlpt = node["jlpt"]
-        self.japanese_word = node["japanese"]["word"]
-        self.japanese_reading = node["japanese"]["reading"]
+        self.japanese = []
+        for entry in node["japanese"]:
+            if "word" not in entry:
+                word = entry["reading"]
+                reading = ""
+            else:
+                word = entry["word"]
+                reading = entry["reading"]
+
+            self.japanese.append((word, reading))
         self.senses = []
-        for sense in node["senses"]
+
+        for sense in node["senses"]:
             self.senses.append(JishoSenses(sense))
 
 class JishoResponse():
     def __init__(self, query: str):
-        self.query = query
-        self.raw = query()
+        self.query_string = query
+        self.raw = self.query()
         self.nodes = []
-        disassemble()
+        self.disassemble()
 
     def query(self):
-        url = TEMPLATE_URL.format(urllib.parse.quote_plus(self.query))
+        url = TEMPLATE_URL.format(urllib.parse.quote_plus(self.query_string))
         r = requests.get(url)
 
         if r.status_code != 200:
             print(f"ERROR: Failed to access Jisho API... {r.status_code}")
+            return None
         
         return json.loads(r.text)
 
