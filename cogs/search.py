@@ -2,9 +2,47 @@ import discord
 from discord.ext import commands
 from utils import jisho
 
+class JishoObject():
+    def __init__(self, query):
+        self.response = jisho.JishoResponse(query)
+        self.total_pages = self.response.entries
+        self.page = 0
+
 class Search(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.activeObject = None
+
+    async def createEmbed(self):
+        response = self.activeObject.response
+        node = response.nodes[self.activeObject.page]
+        embed = discord.Embed(
+            title = node.japanese[0][0],
+            url = f"https://jisho.org/word/{node.slug}",
+            description = node.japanese[0][1],
+            colour = 0x56d926
+        )
+
+        i = 1
+        for sense in node.senses:
+            embed.add_field(name=f"{i}. {sense.fenglish_definitions}", value=sense.fparts_of_speech, inline=False)
+            i += 1
+
+        if len(node.japanese) > 1:
+            other = ""
+            for word, reading in node.japanese[1:]:
+                other += word
+                if reading != "":
+                    other += f"【{reading}】"
+                other += "\n"
+            embed.add_field(name="Other forms", value=other)
+
+
+        embed.set_footer(
+            text = node.ftags
+        )
+
+        return embed
 
     @commands.command(name="search", description="Searches Jisho", usage="<query>", aliases=["s"])
     @commands.cooldown(1, 5)
@@ -12,8 +50,11 @@ class Search(commands.Cog):
         if query == None:
             return
         
-        response = jisho.JishoResponse(query)
-        await ctx.send(response.nodes[0].slug)
+        self.activeObject = JishoObject(query)
+        embed = await self.createEmbed()
+        message = await ctx.send(embed=embed)
+        await message.add_reaction("⬅️")
+        await message.add_reaction("➡️")
 
     @search.error
     async def search_error(self, ctx, error):
