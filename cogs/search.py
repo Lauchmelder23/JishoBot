@@ -8,6 +8,16 @@ class JishoObject():
         self.total_pages = self.response.entries
         self.page = 0
 
+    def prev(self):
+        self.page -= 1
+        if self.page < 0:
+            self.page = self.total_pages - 1
+
+    def next(self):
+        self.page += 1
+        if self.page >= self.total_pages:
+            self.page = 0
+
 class Search(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -39,10 +49,20 @@ class Search(commands.Cog):
 
 
         embed.set_footer(
-            text = node.ftags
+            text = f"{node.ftags} \t\t {self.activeObject.page + 1}/{self.activeObject.total_pages}"
         )
 
         return embed
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
+        if user == self.bot.user:
+            return
+
+        if reaction.me:
+            if reaction.emoji == "⬅️":
+                pass
+
 
     @commands.command(name="search", description="Searches Jisho", usage="<query>", aliases=["s"])
     @commands.cooldown(1, 5)
