@@ -91,7 +91,7 @@ class Search(commands.Cog):
     @commands.command(name="search", description="Searches Jisho", usage="<query>", aliases=["s"])
     @commands.cooldown(1, 5)
     async def search(self, ctx: commands.Context, *, query: str = None):
-        if query == None:
+        if query is None:
             return
         
         self.activeObject = JishoObject(query, ctx.author.id)

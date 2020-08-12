@@ -134,14 +134,14 @@ class JishoKanji():
 
             # Kun Yomi
             kun_block = readings_block.findChild("dl", {"class": "dictionary_entry kun_yomi"}, recursive=True)
-            if kun_block != None:
+            if kun_block is not None:
                 readings = kun_block.findChildren("a", recursive=True)
                 for reading in readings:
                     self.nodes[-1].kun.append(reading.string)
 
             # On Yomi
             on_block = readings_block.findChild("dl", {"class": "dictionary_entry on_yomi"}, recursive=True)
-            if on_block != None:
+            if on_block is not None:
                 readings = on_block.findChildren("a", recursive=True)
                 for reading in readings:
                     self.nodes[-1].on.append(reading.string)
@@ -153,7 +153,7 @@ class JishoKanji():
 
             # JLPT/Grade info
             grade_block = info.findChild("div", {"class": "grade"}, recursive=True)
-            if grade_block != None:
+            if grade_block is not None:
                 self.nodes[-1].grade = grade_block.findChild("strong").string[-1]
             
             self.nodes[-1].jlpt = info.findChild("div", {"class": "jlpt"}, recursive=True).findChild("strong").string
@@ -171,5 +171,3 @@ class JishoKanji():
             image_url = "https:" + image_url
             image_url = image_url.replace("shotai3", "shotai2")
             self.nodes[-1].image_url = image_url
-
-
