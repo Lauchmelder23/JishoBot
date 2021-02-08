@@ -64,6 +64,8 @@ class JishoResponse():
         self.nodes = []
         self.disassemble()
 
+        self.size = len(self.nodes)
+
     def query(self):
         url = TEMPLATE_URL.format(urllib.parse.quote_plus(self.query_string))
         r = requests.get(url, headers=HEADER)
